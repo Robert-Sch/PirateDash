@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=UTF8" http-equiv="content-type">
+  <link rel="stylesheet" href="style.css" type="text/css" media="screen, projection" />
+  <title>Dashboard Piraten MV</title>
+</head>
+<body>
+
+<div style="align:center; text-align: right; width: 1247px; margin-left:auto; margin-right:auto;">
+<div style="width:100%; height: 60px;">
+  <p style="float:left; font-family:Arial,sans-serif; font-style: bold; font-weight: 700; font-size:36px; width:250px; text-align:left; margin:18px 0 0 0;">PIRATEN MV</p>
+  <p style="float:right; align:right; text-align:right"><img style="width: 48px; height: 48px;" alt="" src="logo.png"></p>
+</div>
+<table style="background-color: rgb(255, 255, 255); background-image: none; background-repeat: repeat; background-attachment: scroll; text-align: left; font-family: Verdana; width: 1245px; height: 818px;" border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="background-color: rgb(240, 240, 240); background-image: none; background-repeat: repeat; background-attachment: scroll; height: 565px; width: 188px; vertical-align: top;">
+        <span class="menu_head"><a href="index.php">Dashboard</a></span><br>
+        <ul style="margin-left:4px; padding-left:14px;">
+          <li class="menu_entry"><a href="index.php#LQFBStats">Liquid Feedback</a></li>
+          <li class="menu_entry"><a href="index.php#ArticleStats">Webseite MV Artikel</a></li>
+          <li class="menu_entry"><a href="index.php#WikiStats">Wiki-Artikel</a></li>
+          <li class="menu_entry"><a href="index.php#MLStats">Mailingliste</a></li>
+          <li class="menu_entry"><a href="index.php#RedmineStats">Redmine</a></li>
+          <li class="menu_entry"><a href="index.php#PadStats">Pads</a></li>
+        </ul>
+        <span class="menu_head">Quicklinks</span><br>
+        <ul style="margin-left:4px; padding-left:14px;">
+          <li class="menu_entry"><a target="_blank" href="https://lqpp.de/mv/">lqpp.de/mv</a></li>
+          <li class="menu_entry"><a target="_blank" href="https://lqfb.piratenpartei.de">lqfb.piratenpartei.de</a></li>
+          <li class="menu_entry"><a target="_blank" href="http://www.piratenpartei-mv.de">piratenpartei-mv.de</a></li>
+          <li class="menu_entry"><a target="_blank" href="http://wiki.piratenpartei.de/MV">wiki.piratenpartei.de/MV</a></li>
+          <li class="menu_entry"><a target="_blank" href="https://redmine.piratenpartei-mv.de">redmine.piratenpartei-mv.de</a></li>
+          <li class="menu_entry"><a target="_blank" href="http://meck-pom.piratenpad.de">meck-pom.piratenpad.de</a></li>
+          <li class="menu_entry"><a target="_blank" href="https://www.facebook.com/piratenmv">facebook.com/piratenmv</a></li>
+          <li class="menu_entry"><a target="_blank" href="https://helpdesk.piratenpartei-mv.de">helpdesk.piratenpartei-mv.de</a></li>
+        </ul>         
+        <span class="menu_head">Piraten regional</span><br>
+        <ul style="margin-left:4px; padding-left:14px;">
+          <li class="menu_entry"><a target="_blank" target="_blank" href="http://www.piraten-mv.de">Piraten MV</a></li>
+          <li class="menu_entry"><a target="_blank" href="http://piraten-hgw.de/">Piraten Greifswald</a></li>
+          <li class="menu_entry"><a target="_blank" href="http://piratenpartei-mv.de/stammtisch-neubrandenburg-0">Piraten Neubrandenburg</a></li>
+          <li class="menu_entry"><a target="_blank" href="http://rostock.piratenpartei-mv.de/">Piraten Rostock</a></li>
+          <li class="menu_entry"><a target="_blank" href="http://www.schweriner-piraten.de/">Piraten Schwerin</a></li>
+          <li class="menu_entry"><a target="_blank" href="http://www.piraten-stralsund.de/">Piraten Stralsund</a></li>
+          <li class="menu_entry"><a target="_blank" href="http://www.piraten-usedom.de/">Piraten Usedom</a></li>
+        </ul>
+        <br>
+        <span class="menu_head"><hr></span>
+        <span class="menu_head"><a target="_blank" href="https://lqpp.de/mv/issue/show/97.html">Neue Idee? -> LQFB</a></span><br>        
+        <span class="menu_head"><a target="_blank" href="http://news.piratenpartei.de/showthread.php?tid=191657">Diskussion Entwicklung</a></span><br>
+      </td>
+      <td style="height: 565px; width: 950px; vertical-align: top;">
+        <a name="LQFBStats"></a>
+        <u><b>Liquid Feedback aktiv</b></u><br>
+        {LQFBACTIVESTATS}<br>
+        <u><b>Liquid Feedback eingefroren</b></u><br>
+        {LQFBFROZENSTATS}<br> 
+        <u><b>Liquid Feedback akzeptiert</b></u><br>
+        {LQFBACCEPTEDSTATS}<br> 
+        <a name="MLStats"></a><u><b>Mailingliste</b></u><br>
+        {FACEBOOKSTATS}<br>        
+        <a name="ArticleStats"></a><u><b>Webseite MV Artikel</b></u><br>
+        {ARTICLESTATS}<br> 
+        <a name="WikiStats"></a><u><b>Piraten-Wiki MV (letzte Änderungen)</b></u><br>
+        {WIKISTATS}<br>         
+        <a name="RedmineStats"></a><u><b>Redmine Änträge</b></u><br>
+        {REDMINEISSUESTATS}<br>
+        <u><b>Redmine ToDo</b></u><br>
+        {REDMINETODOSTATS}<br>
+        <a name="PadStats"></a><u><b>Pads</b></u><br>
+        {PADSTATS}<br>                  
+      </td> 
+      <td style="height: 565px; width: 200px; vertical-align: top;">
+        <b>Letzte Aktualisierung</b><br>
+        {PAGESTATS}<br><br>
+        {MEMBERSTATS}<br><br>
+        {FINANCESTATS}<br><br>
+        <b>Helpdesk</b><br>
+        {HELPDESKSTATS}<br><br><br>
+        <b>Termine</b><br>
+        {CALENDARSTATS}<br><br>
+      </td>             
+    </tr>  
+  </tbody>
+</table>
+</div>
+</body>
+</html>

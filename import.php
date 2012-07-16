@@ -8,6 +8,9 @@
 
 */
 
+if ( isset( $_SERVER[ 'REQUEST_METHOD'])) die( "web access denied!");
+
+$TargetFile =  dirname(__FILE__) . '/'. 'dashdata.xml';
 
 $Sources = array(
   "Member" => "http://opendata.piratenpartei-mv.de/mv/mitglieder",

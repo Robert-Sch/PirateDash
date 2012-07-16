@@ -75,10 +75,20 @@ class TLQFBStats extends IJsonStats
     {
       $DateStr = '';
       $JSDateStr = ExtJVar( $LQFBEntry, "issue_created");
+      $LiquidText = ExtJVar( $LQFBEntry, 'current_draft_content');
+
+      $LiquidText = nl2br( htmlspecialchars ( $LiquidText));
+      $LiquidText = preg_replace('/\r/', '\\', $LiquidText);           
+      //die();
+      //$LiquidText = nl2br( $LiquidText);
+      //$LiquidText = nl2br( $LiquidText);
       if ( !empty( $JSDateStr))
-        $DateStr = date( "d.m.y", strtotime( $JSDateStr)); 
+        $DateStr = date( "d.m.y", strtotime( $JSDateStr));         
       $ReverseOut =
-              '<a target="_blank" href="' . ExtJVar( $LQFBEntry, 'url') . '">' . 
+              '<a target="_blank" '.
+              ' onmouseover="return overlib(\''. $LiquidText .'\', WIDTH, 600);" ' . 
+              ' onmouseout="return nd();" ' .
+              'href="' . ExtJVar( $LQFBEntry, 'url') . '">' . 
               TemplateLine( ExtJVar( $LQFBEntry, 'name') . 
               '</a> (' . $DateStr .')') . 
               $ReverseOut;

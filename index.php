@@ -73,15 +73,13 @@ class TLQFBStats extends IJsonStats
     $ReverseOut = '';
     foreach ( $this->JsonObj as $LQFBEntry)
     {
+      
       $DateStr = '';
       $JSDateStr = ExtJVar( $LQFBEntry, "issue_created");
       $LiquidText = ExtJVar( $LQFBEntry, 'current_draft_content');
 
       $LiquidText = nl2br( htmlspecialchars ( $LiquidText));
       $LiquidText = preg_replace('/\r/', '\\', $LiquidText);           
-      //die();
-      //$LiquidText = nl2br( $LiquidText);
-      //$LiquidText = nl2br( $LiquidText);
       if ( !empty( $JSDateStr))
         $DateStr = date( "d.m.y", strtotime( $JSDateStr));         
       $ReverseOut =
@@ -117,12 +115,18 @@ class TRedmineStats extends IJsonStats
       $DateStr    = date( "d.m.y H:i", $TimeStamp);
       $Headline   = ExtJVar( $RedmineEntry, "subject");
       $ID         = ExtJVar( $RedmineEntry, "id");
+      $Author     = ExtJVar( $RedmineEntry->author, "name");
+      $RMText     = ExtJVar( $RedmineEntry, "description");
+      $RMText     = nl2br( htmlspecialchars ( $RMText));
+      $RMText     = preg_replace('/\r/', '\\', $RMText);
       $Link       = "https://redmine.piratenpartei-mv.de/redmine/issues/" . $ID;
 
       $Out .= TemplateLine( 
-        "ID ". $ID . " - " . $DateStr . ": " .
-        '<a target="_blank" href="' . $Link . '">' .
-        $Headline . '</a>');
+        'ID '. $ID . ' - ' . $DateStr . ': <a' .
+        ' onmouseover="return overlib(\''. $RMText .'\', WIDTH, 600);" ' . 
+        ' onmouseout="return nd();" ' .
+        ' target="_blank" href="' . $Link . '">' .
+        $Headline . '</a> (' . $Author . ')');
     }
     return $Out; 
   }
@@ -190,7 +194,6 @@ class TArticleStats extends IJsonStats
     $Out = '';
     foreach ( $this->JsonObj as $ArticleEntry)
     {
-      //var_dump( $ArticleEntry);
       $DateStr = '';
       $JSDateStr = ExtJVar( $ArticleEntry, "timestamp"); 
       //wrong format yyyy-dd-mm to yyyy-mm-dd
@@ -228,13 +231,13 @@ class TWikiStats extends IJsonStats
       $Out .= TemplateLine( 
         $DateStr . ": " .
         '<a target="_blank" href="' . $Link . '">' .
-        $Headline . '</a>');
+        $Headline . '</a> (' . $Author . ')');
     }
     return $Out; 
   }
 }
 //------------------------------------------------------------------------------                                                                                
-//Facebook Articles
+//Facebook Articles -> Mailinglist
 class TFacebookStats extends IJsonStats
 {
   function GetOutputHtml()
@@ -249,11 +252,17 @@ class TFacebookStats extends IJsonStats
       $Headline   = ExtJVar( $FacebookEntry, "name");
       $Type       = ExtJVar( $FacebookEntry, "type"); 
       $Link       = ExtJVar( $FacebookEntry, 'link');
+      $FBText     = ExtJVar( $FacebookEntry, "description");
+      $FBText     = nl2br( htmlspecialchars ( $FBText));
+      $FBText     = preg_replace('/\r/', '\\', $FBText);      
+      $FBText     = preg_replace('/\n/', '\\\n', $FBText);
       if ( empty( $Headline)) $Headline = 'kein Titel';
       if ( !empty( $Link) && strcmp( $Type, 'link') === 0)                                                   
         $Out .= TemplateLine( 
-          $DateStr . ": " .
-          '<a target="_blank" href="' . $Link . '">' .
+          $DateStr . ': <a' .
+          ' onmouseover="return overlib(\''. $FBText .'\', WIDTH, 600);" ' . 
+          ' onmouseout="return nd();" ' .
+          ' target="_blank" href="' . $Link . '">' .
           $Headline . '</a>');
     } 
     return $Out; 

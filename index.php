@@ -67,38 +67,66 @@ class THelpDeskStats extends IJsonStats
 //liquid feedback stats for all stages
 class TLQFBStats extends IJsonStats
 {
+  protected $NextLevelStr = 'next period';
+  protected $JBeginVar = 'issue_half_frozen';
+  protected $JFinishVar = 'issue_verification_time';
+  
   function GetOutputHtml()
   { 
     $Out = '';
     $ReverseOut = '';
     foreach ( $this->JsonObj as $LQFBEntry)
     {
-      
-      $DateStr = '';
-      $JSDateStr = ExtJVar( $LQFBEntry, "issue_created");
+      $DateStr    = '';
+      $JSDateStr  = ExtJVar( $LQFBEntry, "issue_created");
+      $IHFDateStr = ExtJVar( $LQFBEntry, $this->JBeginVar);
+      $PhaseLengthStr = ExtJVar( $LQFBEntry, $this->JFinishVar); 
+      $PhaseLength = intval( substr($PhaseLengthStr, 0, strlen( $PhaseLengthStr)-4));                                                          
+      if ( !empty( $IHFDateStr) && !empty( $PhaseLength))
+      {
+        $FinishTime = strtotime( $IHFDateStr) + $PhaseLength * 24 * 3600;
+        $RemainingH = round( ($FinishTime - time()) / 3600, 0);
+        $DateStr = date( "d.m.y H:i", $FinishTime);
+      }
       $LiquidText = ExtJVar( $LQFBEntry, 'current_draft_content');
-
       $LiquidText = nl2br( htmlspecialchars ( $LiquidText));
       $LiquidText = preg_replace('/\r/', '\\', $LiquidText);           
       if ( !empty( $JSDateStr))
         $DateStr = date( "d.m.y", strtotime( $JSDateStr));         
-      $ReverseOut =
+      $Out .=
               '<a target="_blank" '.
               ' onmouseover="return overlib(\''. $LiquidText .'\', WIDTH, 600);" ' . 
               ' onmouseout="return nd();" ' .
               'href="' . ExtJVar( $LQFBEntry, 'url') . '">' . 
               TemplateLine( ExtJVar( $LQFBEntry, 'name') . 
-              '</a> (' . $DateStr .')') . 
+              '</a> (' . $DateStr .', ' . 
+              (!empty( $FinishTime)? PrettyPeriod( $FinishTime) . ' bis '. $this->NextLevelStr:'') .
+              ')') . 
               $ReverseOut;
     }
-    $Out .= $ReverseOut;
+    //$Out .= $ReverseOut;
     return $Out;
   }
 }
 //------------------------------------------------------------------------------
-class TLQFBActiveStats extends TLQFBStats {};
-class TLQFBFrozenStats extends TLQFBStats {};
-class TLQFBAcceptedStats extends TLQFBStats {};
+class TLQFBActiveStats extends TLQFBStats
+{
+  protected $NextLevelStr = 'geschlossen';
+  protected $JBeginVar = 'issue_fully_frozen';
+  protected $JFinishVar = 'issue_voting_time';
+};
+class TLQFBFrozenStats extends TLQFBStats
+{ 
+  protected $NextLevelStr = 'Abstimmung';
+  protected $JBeginVar = 'issue_half_frozen';
+  protected $JFinishVar = 'issue_verification_time';
+};
+class TLQFBAcceptedStats extends TLQFBStats
+{ 
+  protected $NextLevelStr = 'eingefroren';
+  protected $JBeginVar = 'issue_created';
+  protected $JFinishVar = 'issue_discussion_time';
+};
 
 //------------------------------------------------------------------------------
 //Redmine
@@ -294,6 +322,21 @@ function ExtractJsonVar( &$JsonObj, $VarName)
   {
     return $Out;
   }
+}
+//------------------------------------------------------------------------------
+function PrettyPeriod( $FutureTime, $DayStr = 'd', $HourStr = 'h')
+{
+   $Result = '';
+   $RemainingH = round( ($FutureTime - time()) / 3600, 0);
+      
+   if ( $RemainingH > 24)
+   {
+     $RemainingD = floor( $RemainingH / 24);
+     $RemainingH = $RemainingH - $RemainingD * 24;
+     $Result .= $RemainingD . $DayStr;
+   }
+   $Result .= ' ' . $RemainingH . $HourStr;
+   return $Result;
 }
 //------------------------------------------------------------------------------
 function ExtJVar( &$JsonObj, $VarName) { return ExtractJsonVar( $JsonObj, $VarName); }

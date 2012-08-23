@@ -25,7 +25,13 @@ $Sources = array(
   "Calendar" => "http://opendata.piratenpartei-mv.de/calendar",
   "Article" => "http://opendata.piratenpartei-mv.de/articles",
   "Wiki" => "http://opendata.piratenpartei-mv.de/wiki",
-  "Facebook" => "http://opendata.piratenpartei-mv.de/facebook/piratenmv/stream"   
+  "Facebook" => "http://opendata.piratenpartei-mv.de/facebook/piratenmv/stream",
+  "TwitterMV" => "http://opendata.piratenpartei-mv.de/twitter/piraten_mv/stream",
+  "TwitterMVReply" => "http://opendata.piratenpartei-mv.de/twitter/piraten_mv/replies",
+  "TwitterMVIT" => "http://opendata.piratenpartei-mv.de/twitter/piraten_mv_it/stream",
+  "TwitterMVITReply" => "http://opendata.piratenpartei-mv.de/twitter/piraten_mv_reply/replies",
+  "TwitterMVLaVo" => "http://opendata.piratenpartei-mv.de/twitter/piraten_mv_lavo/stream",
+  "TwitterMVLaVoReply" => "http://opendata.piratenpartei-mv.de/twitter/piraten_mv_lavo/replies"
 );
 
 //------------------------------------------------------------------------------

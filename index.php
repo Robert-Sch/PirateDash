@@ -6,7 +6,20 @@
   r.schiewer@web.de
 */
 
-define( "PAD_DISPLAY_DAYS", 7);
+define( "PAD_DISPLAY_DAYS", 10);
+define( "TWITTER_DISPLAY_DAYS", 10);
+
+global $TweetCache;
+$TweetCache = array();
+class TTweet
+{ 
+  public $Author, $Content;
+  public function __construct( $Author, $Content)
+  {
+    $this->Author = $Author;
+    $this->Content = $Content;
+  }
+}
 
 abstract class IJsonStats
 {
@@ -75,6 +88,8 @@ class TLQFBStats extends IJsonStats
   { 
     $Out = '';
     $ReverseOut = '';
+    if ( !is_array( $this->JsonObj))
+      return;
     foreach ( $this->JsonObj as $LQFBEntry)
     {
       $DateStr    = '';
@@ -297,7 +312,59 @@ class TFacebookStats extends IJsonStats
   }
 }
 //------------------------------------------------------------------------------
-function TemplateLine( $Input = '', $Format = '')
+class TTwitterStats extends IJsonStats
+{
+  protected $UserFilter; 
+  
+  function GetOutputHtml()
+  {
+    //only Collecting
+    global $TweetCache;
+    foreach ( $this->JsonObj as $Tweet)
+    {
+      $JSDateStr = ExtJVar( $Tweet, "time");
+      $TimeStamp = strtotime( $JSDateStr);
+      $TwUser = ExtJVar( $Tweet, "user");
+      if ( !empty( $this->UserFilter) && strcmp( $TwUser, $this->UserFilter) !== 0)
+        continue;      
+      $TwText    = ExtJVar( $Tweet, "text") . " "; 
+      $TweetCache[ $TimeStamp] = new TTweet( $TwUser, $TwText); 
+    } 
+  }
+  
+  function GetCollectedOutputHtml()
+  {
+    $Out = '';
+    $ColorClass = '';
+    global $TweetCache;
+    krsort( $TweetCache, SORT_NUMERIC); 
+    foreach ( $TweetCache as $TimeStamp => $Tweet)
+    {
+      $DateStr    = date( "d.m.y H:i", $TimeStamp);      
+      if ( $TimeStamp > time() - 3600*24* TWITTER_DISPLAY_DAYS)
+      {
+        $ColorClass = strcmp( $ColorClass, "row1") !== 0 ? "row1" : "row2";
+        $TwText = preg_replace('/(http|https):\/\/[^ ]*(?= )/si', '<a href="$0">$0</a>', $Tweet->Content);        
+        $Out .= TemplateLine( 
+                  TemplateLine( $DateStr . " " . $Tweet->Author . ':', FALSE, 'td', 'nowrap') . 
+                  TemplateLine( $TwText, FALSE, 'td'), FALSE, 'tr', 'valign=top class=' .  $ColorClass);
+      }
+    }
+    $Out = TemplateLine( $Out, FALSE, 'table');
+    //var_dump( $Out);
+    return $Out;    
+  }
+}
+//------------------------------------------------------------------------------
+class TTwitterMVStats extends TTwitterStats { protected $UserFilter = 'piraten_mv'; };
+class TTwitterMVReplyStats extends TTwitterStats { protected $UserFilter = 'piraten_mv'; };
+class TTwitterMVITStats extends TTwitterStats { protected $UserFilter = 'piraten_mv_it'; };
+class TTwitterMVITReplyStats extends TTwitterStats { protected $UserFilter = 'piraten_mv_it'; };
+class TTwitterMVLaVoStats extends TTwitterStats { protected $UserFilter = 'piraten_mv_lavo'; };
+class TTwitterMVLaVoReplyStats extends TTwitterStats { protected $UserFilter = 'piraten_mv_lavo'; };
+
+//------------------------------------------------------------------------------
+function TemplateLine( $Input = '', $LineBreak = TRUE , $Format = '', $ExtraFlags = '')
 {
   if ( empty( $Format))
   {
@@ -305,7 +372,7 @@ function TemplateLine( $Input = '', $Format = '')
   }
   else
   {
-    return "<".$Format.">" . $Input . "</".$Format."><br>";
+    return "<".$Format." ". $ExtraFlags . ">" . $Input . "</".$Format.">" . ($LineBreak? "<br>" : "");
   }
 }
 //------------------------------------------------------------------------------
@@ -374,9 +441,12 @@ foreach( $DashXML->children() AS $Child)
   $TemplateContent = str_replace( '{'.StrToUpper($TypeStr).'}', $DashOut, $TemplateContent);
 
 }
+
+$TwitterStats = new TTwitterStats( '');
+$TwitterOut = $TwitterStats->GetCollectedOutputHtml();
 $LastXMLChange = filectime( $DataFile);
 $TemplateContent = str_replace( '{PAGESTATS}', date( "d.m.y H:i", $LastXMLChange), $TemplateContent);
-
+$TemplateContent = str_replace( '{TWITTERSTATS}', $TwitterOut, $TemplateContent);
 echo $TemplateContent;  
 
 

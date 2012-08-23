@@ -3,3 +3,5 @@ table, tr, td { font-size: 13px; font-family:Verdana,sans-serif; }
 a, a:visited { color:blue; text-decoration: none;}
 .menu_head { font-size: 16px; font-style: bold;}
 .menu_head { font-size: 15px;}
+.row1 {background-color: #FFFFFF; }
+.row2 {background-color: #EEEEEE; }

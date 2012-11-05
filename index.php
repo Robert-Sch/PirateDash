@@ -88,11 +88,13 @@ class TLQFBStats extends IJsonStats
   { 
     $Out = '';
     $ReverseOut = '';
+    //var_dump( $this->JsonObj);
     if ( !is_array( $this->JsonObj))
       return;
     foreach ( $this->JsonObj as $LQFBEntry)
     {
       $DateStr    = '';
+      $Author = ExtJVar( $LQFBEntry, "author");
       $JSDateStr  = ExtJVar( $LQFBEntry, "issue_created");
       $IHFDateStr = ExtJVar( $LQFBEntry, $this->JBeginVar);
       $PhaseLengthStr = ExtJVar( $LQFBEntry, $this->JFinishVar); 
@@ -101,21 +103,34 @@ class TLQFBStats extends IJsonStats
       {
         $FinishTime = strtotime( $IHFDateStr) + $PhaseLength * 24 * 3600;
         $RemainingH = round( ($FinishTime - time()) / 3600, 0);
-        $DateStr = date( "d.m.y H:i", $FinishTime);
+        $DateStr = date( "d.m.y H:i", $FinishTime) . ", ";
       }
-      $LiquidText = ExtJVar( $LQFBEntry, 'current_draft_content');
+
+      $LiquidText = addslashes( ExtJVar( $LQFBEntry, 'current_draft_content'));
+      //var_dump( $LiquidText);
       $LiquidText = nl2br( htmlspecialchars ( $LiquidText));
-      $LiquidText = preg_replace('/\r/', '\\', $LiquidText);           
+      $LiquidText = preg_replace('/\n/', '\\\n', $LiquidText);           
       if ( !empty( $JSDateStr))
-        $DateStr = date( "d.m.y", strtotime( $JSDateStr));         
+        $DateStr = date( "d.m.y", strtotime( $JSDateStr)) . ", ";
+      
+      $FinishStr = ExtJVar( $LQFBEntry, "str_remaining");
+      if ( !empty( $FinishStr))
+      {
+      	$FinishStr = $FinishStr . ' bis '. $this->NextLevelStr;
+      }
+      if ( !empty( $FinishTime))
+      {
+      	$FinishStr = PrettyPeriod( $FinishTime) . ' bis '. $this->NextLevelStr;
+      }
       $Out .=
               '<a target="_blank" '.
               ' onmouseover="return overlib(\''. $LiquidText .'\', WIDTH, 600);" ' . 
               ' onmouseout="return nd();" ' .
               'href="' . ExtJVar( $LQFBEntry, 'url') . '">' . 
               TemplateLine( ExtJVar( $LQFBEntry, 'name') . 
-              '</a> (' . $DateStr .', ' . 
-              (!empty( $FinishTime)? PrettyPeriod( $FinishTime) . ' bis '. $this->NextLevelStr:'') .
+              '</a> (' . $DateStr . 
+              (!empty( $Author)? $Author . "," : "") .
+              $FinishStr .
               ')') . 
               $ReverseOut;
     }
@@ -142,7 +157,25 @@ class TLQFBAcceptedStats extends TLQFBStats
   protected $JBeginVar = 'issue_created';
   protected $JFinishVar = 'issue_discussion_time';
 };
-
+//------------------------------------------------------------------------------
+class TLQFBBUActiveStats extends TLQFBStats
+{
+  protected $NextLevelStr = 'geschlossen';
+  protected $JBeginVar = 'issue_fully_frozen';
+  protected $JFinishVar = 'issue_voting_time';
+};
+class TLQFBBUFrozenStats extends TLQFBStats
+{ 
+  protected $NextLevelStr = 'Abstimmung';
+  protected $JBeginVar = 'issue_half_frozen';
+  protected $JFinishVar = 'issue_verification_time';
+};
+class TLQFBBUAcceptedStats extends TLQFBStats
+{ 
+  protected $NextLevelStr = 'eingefroren';
+  protected $JBeginVar = 'issue_created';
+  protected $JFinishVar = 'issue_discussion_time';
+};
 //------------------------------------------------------------------------------
 //Redmine
 class TRedmineStats extends IJsonStats
@@ -414,7 +447,6 @@ header("Content-Type: text/html; charset=utf-8");
 $DashOut = '';
 $DataFile = "dashdata.xml";
 $DashXML = simplexml_load_file( $DataFile);
-$Node = $DashXML->children();
 
 
 $TemplateFile = "template.html";
@@ -425,7 +457,6 @@ foreach( $DashXML->children() AS $Child)
 
   $Attributes = $Child->attributes(); 
   $TypeObj = $Attributes->Type;
-  $JsonStr = html_entity_decode( $Attributes->Value);
   $JsonStr = html_entity_decode( $Attributes->Value);
   $JsonStr = json_decode( $JsonStr);
   $TypeStr = (string) $TypeObj . "Stats";
